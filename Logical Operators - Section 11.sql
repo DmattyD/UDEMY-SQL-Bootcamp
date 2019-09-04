@@ -87,3 +87,54 @@ SELECT title, rleased_year,
     END AS STOCK
 FROM books; 
 --- will add Stock category with appropriate number of *'s depending on stock_quantity.
+
+//// CHALLENGE Questions and Solutions
+
+-- Evaluate the following:
+SELECT 10 != 10
+-- will evaluate to 0 or false,  as 10 IS equal to 10
+
+SELECT 15 > 14 && 99 - 5 <= 94;
+-- will evaluate to 1 or true
+
+SELECT 1 IN (5,3) || 9 BETWEEN 8 AND 10;
+-- will evaluate to 1 because one of the statments is true
+
+--Select all books written before 1980
+SELECT title FROM books WHERE release_year <1980
+
+-- Select all books written by Eggers or Chabon
+SELECT title, author_lname FROM books WHERE author_lname IN ('Eggers', 'Chabon');
+
+-- Select all books written by Lahiri, published after 2000
+SELECT title, author_lname 
+FROM books WHERE author_lname = 'Lahiri'
+AND released_year >= 2000;
+
+-- Select all books with pagecounts between 100 and 200
+SELECT title, pages FROM books 
+WHERE pages BETWEEN 100 and 200;
+
+-- Select all books where author_lname stars with 'C' or 'S'
+SELECT title, author_lname FROM books 
+WHERE author_lname LIKE 'C%' ||
+author_lname LIKE 'S%';
+
+-- If title contains 'stories' - make it a short story, 'just kids' & 'a heartbreaking novel' - memoir, ' everything else - Novel
+SELECT title, author_lname,
+  CASE
+    WHEN title LIKE '%stories% THEN 'Short Stories'
+    WHEN title LIKE 'Just Kids' THEN 'Memoir'
+    WHEN title LIKE '%heartbreaking%' THEN 'Memoir'
+    ELSE 'Novel'   
+  END AS Type
+  FROM books;
+  
+  -- Group the books by author, along with the pluralized number of books
+  SELECT author_lname, 
+    CASE
+      WHEN COUNT(*) = 1 THEN '1 BOOK'
+      ELSE CONCAT(COUNT(*), ' books')
+    END AS COUNT
+  FROM books
+  GROUP BY author_lname, author_fname;
