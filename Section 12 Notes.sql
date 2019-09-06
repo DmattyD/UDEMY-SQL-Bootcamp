@@ -99,3 +99,63 @@ ORDER BY total_spent DESC;
 SELECT * FROM customers
 RIGHT JOIN orders
 	ON customer_id = orders.customer_id;
+
+-- JOINS Exerecises PART 1 ----------------------------------
+
+-- Create a schema with students table and papers table
+CREATE TABLE students(
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	first_name VARCHAR(50)
+	);
+	
+CREATE TABLE papers(
+	title VARCHAR(50),
+	grade INT,
+	student_id INT,
+	FOREIGN KEY(student_id) REFERENCES students(id)
+	);
+
+-- Print a table with only the graded papers in descending order
+SELECT 
+	first_name,
+	title,
+	grade,
+FROM students LEFT JOIN papers ON student_id = students.id
+WHERE grade IS NOT NULL
+ORDER BY grade DESC;
+
+-- Print a table with name, title, and grade from the two tables with NULL values included
+SELECT 
+	first_name,
+	title,
+	grade,
+FROM students LEFT JOIN papers ON student_id = students.id;
+
+-- Print the above, but replace NULL with Missing / 0
+SELECT 
+	first_name,
+	IFNULL(title, 'MISSING'),
+	IFNULL(grade, 0)
+FROM students LEFT JOIN papers ON student_id = students.id;
+
+-- Print the average of the scores
+SELECT
+	first_name,
+	IFNULL(AVG(grade),0) AS Average
+FROM students LEFT JOIN papers ON student_id = students.id
+GROUP BY students.id
+ORDER BY grade DESC;
+-- GROUP BY is required otherwise it will average all the scores
+
+-- Print student, average, and if passing or failing - 75.00 and above is passing - this is a case statement
+SELECT
+	first_name,
+	IFNULL(AVG(grade),0) AS Average
+	CASE
+		WHEN AVG(grade) >= 75 THEN 'Passing'
+		WHEN AVG(grade) IS NULL THEN 'Failing'
+		ELSE 'Failing'
+	end AS passing_status
+FROM students LEFT JOIN papers ON student_id = students.id
+GROUP BY students.id
+ORDER BY grade DESC;
