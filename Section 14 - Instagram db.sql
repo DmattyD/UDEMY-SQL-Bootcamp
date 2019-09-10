@@ -1,0 +1,1 @@
+--- Challenge section regarding Instagram DB schemas
