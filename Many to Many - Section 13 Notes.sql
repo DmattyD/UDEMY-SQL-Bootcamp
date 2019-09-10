@@ -63,3 +63,112 @@ INSERT INTO reviews(series_id, reviewer_id, rating) VALUES
     (10,5,9.9),
     (13,3,8.0),(13,4,7.2),
     (14,2,8.5),(14,3,8.9),(14,4,8.9);
+
+-- CHALLENGE PROBLEMS -------------------------------------
+
+-- CHALLENGE 1
+-- JOIN THE SERIES title with the rating that have been rated
+
+SELECT * FROM series
+JOIN reviews
+	ON series.id = reviews.series_id;
+	
+SELECT 
+	title,
+	rating
+	FROM series
+JOIN reviews
+	ON series.id = reviews.series_id;
+
+-- CHALLENGE 2
+-- Select average rating in ascending order
+
+SELECT
+	title,
+	AVG(rating) as avg_rating
+FROM series 
+JOIN reviews
+	ON series.id = reviews.series_id
+GROUP BY series.id
+ORDER by rating;
+
+-- ^^^ NO COMMA is needed after final select criteria
+
+-- CHALLENGE 3
+-- show the first, last name and every rating they have made
+
+SELECT
+	first_name,
+	last_name,
+	rating
+FROM reviewers
+JOIN reviews
+	ON reviewers.id = reviews.reviewer_id;
+-- this is an INNER JOIN
+
+-- CHALLENGE 4
+-- identify the unreviewed series 
+SELECT
+	title AS unreviewed_series
+FROM series
+LEFT JOIN reviews
+ON series.id = reviews.series_id
+WHERE rating IS NULL;
+
+-- CHALLENGE 5
+-- Show a table of the average rating by genre
+SELECT
+	genre,
+	ROUND(AVG(rating), 2) AS avg_rating
+FROM series 
+JOIN reviews
+on series.id = reviews.series_id
+GROUP BY genre;
+
+-- CHALLENGE 6
+-- Give Min, Max, Count, Avg and Status of every reviewer
+
+SELECT
+	first_name,
+	last_name,
+	COUNT(rating) AS COUNT,
+	IFNULL(MIN(rating), 0) AS MIN,
+	IFNULL(MAX(rating), 0) AS MAX,
+	IFNULL(AVG(rating), 0)AS AVG,
+	IF(COUNT(rating) >= 1, 'ACTIVE', 'INACTIVE') AS STATUS
+FROM reviewers
+LEFT JOIN reviews
+	ON reviewers.id = reviews.reviewer_id
+GROUP BY reviewers.id;
+
+SELECT first_name, 
+       last_name, 
+       Count(rating) AS COUNT, 
+       Ifnull(Min(rating), 0) AS MIN, 
+       Ifnull(Max(rating), 0) AS MAX, 
+       Round(Ifnull(Avg(rating), 0), 2) AS AVG, 
+       CASE 
+         WHEN Count(rating) >= 10 THEN 'POWER USER' 
+         WHEN Count(rating) > 0 THEN 'ACTIVE' 
+         ELSE 'INACTIVE' 
+       end AS STATUS 
+FROM   reviewers 
+       LEFT JOIN reviews 
+              ON reviewers.id = reviews.reviewer_id 
+GROUP  BY reviewers.id; 
+
+-- CHALLENGE 7
+-- Give Title, Review, and reviewer
+
+SELECT 
+	title,
+	rating,
+	CONCAT(first_name, ' ', last_name) AS reviewer
+	FROM reviewers
+INNER JOIN reviews
+	ON reviewers.id = reviews.reviewer_id
+INNER JOIN series 
+	ON series.id = reviews.series_id
+ORDER BY title;
+
+-- ^^ can join multiple tables in one query
