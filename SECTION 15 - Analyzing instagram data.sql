@@ -48,3 +48,39 @@ GROUP BY photos.id
 ORDER BY total_likes DESC
 LIMIT 1;
 -- ^^ this query is with the aditional join for the user name
+
+-- 5. How many times does the average user post?
+-- CALCULATE average number of photos per user
+SELECT COUNT(*) FROM photos;
+SELECT COUNT(*) from users;
+
+SELECT
+	(SELECT COUNT(*) FROM photos) / (SELECT COUNT(*) FROM users) AS Average ;
+    
+-- 6. What are the top 5 hastags?
+
+SELECT * FROM tags;
+SELECT * FROM photo_tags;
+
+SELECT 
+tag_id,
+tag_name,
+COUNT(*) AS total
+FROM photo_tags
+JOIN tags ON tags.id = photo_tags.tag_id
+GROUP BY tag_name
+ORDER BY total DESC
+LIMIT 5;
+
+-- 7. Find users who have liked every single post
+-- FIND THE BOTS
+
+SELECT 
+	username,
+    COUNT(*) AS num_likes
+FROM users
+INNER JOIN likes on likes.user_id = users.id
+GROUP BY username
+HAVING num_likes = (SELECT COUNT(*) FROM photos);
+-- HAVING in this case is similar to WHERE, and the subquery makes this query dynamic
+-- it also limits this to the number of photos and will auto-update as opposed to being hardcoded.
