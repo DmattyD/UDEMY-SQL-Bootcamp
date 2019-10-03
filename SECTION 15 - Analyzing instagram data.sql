@@ -84,3 +84,42 @@ GROUP BY username
 HAVING num_likes = (SELECT COUNT(*) FROM photos);
 -- HAVING in this case is similar to WHERE, and the subquery makes this query dynamic
 -- it also limits this to the number of photos and will auto-update as opposed to being hardcoded.
+
+-- CREATE a trigger to prevent self-follows;
+DELIMITER $$
+CREATE TRIGGER prevent_self_follows
+	BEFORE INSERT ON follows FOR EACH ROW
+    BEGIN
+		IF NEW.follower_id = New.followee_id
+		THEN
+			SIGNAL sqlstate '45000'
+            SET MESSAGE_TEXT = 'Cannot follow yourself';
+		END IF;
+        END;
+$$
+DELIMITER ;
+
+-- UNFOLLOWS Trigger
+DELIMITER $$ 
+CREATE TRIGGER capture_unfollow
+	AFTER DELETE ON follows FOR EACH ROW
+    BEGIN
+		INSERT INTO unfollows
+        SET 
+        follower_id = OLD.follower_id,
+        followee_id = OLD.followee_id;
+        END;
+$$
+
+DELIMITER ;
+
+SELECT * from follows LIMIT 5;
+
+DELETE FROM follows WHERE follower_id = 2 AND followee_id = 1;
+
+SELECT * from unfollows;
+
+-- SHOW triggers
+SHOW TRIGGERS;
+
+-- DROP TRIGGER trigger_name - how to drop a trigger;
